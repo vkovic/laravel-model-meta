@@ -1,7 +1,12 @@
 {
-  "name": "movor/laravel-model-meta",
+  "name": "vkovic/laravel-model-meta",
   "description": "Laravel model meta storage",
-  "keywords": ["laravel", "model", "meta", "data"],
+  "keywords": [
+    "laravel",
+    "model",
+    "meta",
+    "data"
+  ],
   "license": "MIT",
   "authors": [
     {
@@ -11,11 +16,26 @@
   ],
   "autoload": {
     "psr-4": {
-      "Movor\\LaravelModelMeta\\": "src/package"
+      "Vkovic\\LaravelModelMeta\\": "src/package"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Vkovic\\LaravelModelMeta\\Test\\": "tests"
     }
   },
   "require": {
-    "php": ">=7.0.0",
-    "movor/laravel-meta": "@dev"
-  }
+    "php": "^7.0",
+    "laravel/framework": "5.5.*|5.6.*|5.7.*",
+    "vkovic/laravel-meta": "@dev"
+  },
+  "require-dev": {
+    "orchestra/testbench": "3.5.*|3.6.*|3.7.*",
+    "orchestra/database": "3.5.*|3.6.*|3.7.*",
+    "phpunit/phpunit": "^6.3|^7.0"
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  },
+  "minimum-stability": "dev"
 }

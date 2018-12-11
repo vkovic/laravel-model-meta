@@ -1,11 +1,11 @@
 <?php
 
-namespace Movor\LaravelModelMeta\Models\Traits;
+namespace Vkovic\LaravelModelMeta\Models\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Movor\LaravelMeta\Meta;
+use Vkovic\LaravelMeta\Meta;
 
 trait HasMetaData
 {
