@@ -9,20 +9,6 @@ use Vkovic\LaravelModelMeta\Providers\LaravelModelMetaServiceProvider;
 class TestCase extends OrchestraTestCase
 {
     /**
-     * Default table
-     *
-     * @var string
-     */
-    protected $table;
-
-    /**
-     * Default realm
-     *
-     * @var string
-     */
-    protected $realm;
-
-    /**
      * Setup the test environment.
      *
      * @throws \Exception
@@ -33,11 +19,14 @@ class TestCase extends OrchestraTestCase
     {
         parent::setUp();
 
-        // Retrieve table and default realm name for later use
-        $this->table = config('laravel-meta.table_name');
-        $this->realm = config('laravel-meta.realm');
+        // Load vkovic/laravel-meta migrations
+        $this->loadMigrationsFrom(__DIR__ . '/../vendor/vkovic/laravel-meta/src/database/migrations');
 
+        // Load package migrations
         $this->packageMigrations();
+
+        // Load testing support migrations
+        $this->loadMigrationsFrom(__DIR__ . '/../vendor/laravel/framework/tests/Database/migrations/one/2016_01_01_000000_create_users_table.php');
     }
 
     /**
@@ -47,7 +36,6 @@ class TestCase extends OrchestraTestCase
      */
     protected function packageMigrations()
     {
-        // TODO: run package migration from laravel-meta package
         $this->artisan('migrate');
     }
 

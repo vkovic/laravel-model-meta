@@ -5,7 +5,7 @@ namespace Vkovic\LaravelModelMeta\Models\Traits;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Vkovic\LaravelMeta\Meta;
+use Vkovic\LaravelModelMeta\Meta;
 
 trait HasMetaData
 {
