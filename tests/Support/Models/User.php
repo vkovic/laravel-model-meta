@@ -3,11 +3,11 @@
 namespace Vkovic\LaravelModelMeta\Test\Support\Models;
 
 use Illuminate\Database\Eloquent\Model;
-//use Vkovic\LaravelModelMeta\Models\Traits\HasMetaData;
+use Vkovic\LaravelModelMeta\Models\Traits\HasMetaData;
 
 class User extends Model
 {
-    //use HasMetaData;
+    use HasMetaData;
 
     /**
      * The attributes that are mass assignable.

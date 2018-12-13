@@ -19,6 +19,9 @@ class TestCase extends OrchestraTestCase
     {
         parent::setUp();
 
+        // Load user factory
+        $this->withFactories(__DIR__ . '/../tests/database/factories');
+
         // Load vkovic/laravel-meta migrations
         $this->loadMigrationsFrom(__DIR__ . '/../vendor/vkovic/laravel-meta/src/database/migrations');
 

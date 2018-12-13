@@ -2,15 +2,25 @@
 
 namespace Vkovic\LaravelModelMeta\Models;
 
-class Meta extends \Vkovic\LaravelMeta\Models\Meta
+use Illuminate\Database\Eloquent\Builder;
+use Vkovic\LaravelMeta\Models\Meta as VkovicLaravelMeta;
+
+class Meta extends VkovicLaravelMeta
 {
+    protected static $realm = 'vkovic/laravel-model-meta';
+
     /**
-     * Metable relation
+     * Filter meta by metable
      *
-     * @return MorphTo
+     * @param Builder $query
+     *
+     * @return mixed
      */
-    public function metable()
+    public function scopeMetable(Builder $query, $metableType, $metableId)
     {
-        return $this->morphTo();
+        return $query->where([
+            'metable_type' => $metableType,
+            'metable_id' => $metableId
+        ]);
     }
 }

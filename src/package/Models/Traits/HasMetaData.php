@@ -3,9 +3,8 @@
 namespace Vkovic\LaravelModelMeta\Models\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Vkovic\LaravelModelMeta\Meta;
+use Vkovic\LaravelModelMeta\Models\Meta;
 
 trait HasMetaData
 {
@@ -17,8 +16,8 @@ trait HasMetaData
     public static function bootHasMetaData()
     {
         // Delete related meta on model deletion
-        static::deleted(function (Model $model) {
-            $model->purgeMeta();
+        static::deleted(function (Meta $meta) {
+            $meta->purgeMeta();
         });
     }
 
@@ -34,72 +33,208 @@ trait HasMetaData
 
     /**
      * Set meta at given key
+     * related to this model (via metable)
+     * for package realm.
+     * If meta exists, it'll be overwritten.
      *
-     * @param $key
-     * @param $value
-     *
+     * @param string $key
+     * @param mixed  $value
+     * @param string $type
      */
-    public function setMeta($key, $value)
+    public function setMeta($key, $value, $type = 'string')
     {
-        $this->meta()->updateOrCreate([
-            'realm' => $this->getMetaIdentifier()[0],
-            'key' => $key,
-        ], ['key' => $key, 'value' => $value]);
+        $meta = Meta::metable(static::class, $this->id)
+            ->where('key', $key)->first();
+
+        if ($meta === null) {
+            $meta = new Meta;
+            $meta->key = $key;
+        }
+
+        $meta->value = $value;
+        $meta->type = $type;
+
+        $this->meta()->save($meta);
+    }
+
+    /**
+     * Create meta at given key
+     * related to this model (via metable)
+     * for package realm.
+     * If meta exists, exception will be thrown.
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @param string $type
+     *
+     * @throws \Exception
+     */
+    public function createMeta($key, $value, $type = 'string')
+    {
+        $exists = Meta::metable(static::class, $this->id)
+            ->where('key', $key)->exists();
+
+        if ($exists) {
+            $message = "Can't create meta (key: $key). ";
+            $message .= "Meta already exists";
+            throw new \Exception($message);
+        }
+
+        $meta = new Meta;
+
+        $meta->key = $key;
+        $meta->type = $type;
+        $meta->value = $value;
+
+        $this->meta()->save($meta);
+    }
+
+    /**
+     * Update meta at given key
+     * related to this model (via metable)
+     * for package realm.
+     * If meta doesn't exists, exception will be thrown.
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @param string $type
+     *
+     * @throws \Exception
+     */
+    public function updateMeta($key, $value, $type = 'string')
+    {
+        try {
+            $meta = Meta::metable(static::class, $this->id)
+                ->where('key', $key)->firstOrFail();
+        } catch (\Exception $e) {
+            $message = "Can't update meta (key: $key). ";
+            $message .= "Meta doesn't exist";
+
+            throw new \Exception($message);
+        }
+
+        $meta->type = $type;
+        $meta->value = $value;
+
+        $this->meta()->save($meta);
     }
 
     /**
      * Get meta at given key
+     * related to this model (via metable)
+     * for package realm
      *
-     * @param $key
+     * @param string $key
+     * @param mixed  $default
      *
-     * @return mixed
+     * @return array
      */
     public function getMeta($key, $default = null)
     {
-        $meta = $this->meta()->where('key', $key)->first();
+        $meta = Meta::metable(static::class, $this->id)
+            ->where('key', $key)->first();
 
-        return optional($meta)->value ?: $default;
+        return $meta === null
+            ? $default
+            : $meta->value;
+    }
+
+    /**
+     * Check if meta key record exists by given key
+     * related to this model (via metable)
+     * for package realm
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function metaExists($key)
+    {
+        return Meta::metable(static::class, $this->id)
+            ->where('key', $key)->exists();
+    }
+
+    /**
+     * Count all meta
+     * related to this model (via metable)
+     * for package realm
+     *
+     * @param string $realm
+     *
+     * @return int
+     */
+    public function countMeta()
+    {
+        return Meta::metable(static::class, $this->id)
+            ->count();
     }
 
     /**
      * Get all meta
+     * related to this model (via metable)
+     * for package realm
      *
      * @return array
      */
-    public function getAllMeta()
+    public function allMeta()
     {
-        return $this->meta()->pluck('value', 'key')->toArray();
+        $meta = Meta::metable(static::class, $this->id)
+            ->get(['key', 'value', 'type']);
+
+        $data = [];
+        foreach ($meta as $m) {
+            $data[$m->key] = $m->value;
+        }
+
+        return $data;
     }
 
     /**
-     * Remove meta
+     * Get all meta keys
+     * related to this model (via metable)
+     * for package realm
      *
-     * @param $key
+     * @return array
+     */
+    public function metaKeys()
+    {
+        return Meta::metable(static::class, $this->id)
+            ->pluck('key')
+            ->toArray();
+    }
+
+    /**
+     * Remove meta at given key or array of keys
+     * related to this model (via metable)
+     * for package realm
+     *
+     * @param string|array $key
      */
     public function removeMeta($key)
     {
-        $this->meta()->where('key', $key)->delete();
+        $keys = (array) $key;
+
+        Meta::metable(static::class, $this->id)
+            ->whereIn('key', $keys)
+            ->delete();
     }
 
     /**
      * Purge meta
+     * related to this model (via metable)
+     * for package realm
+     *
+     * @return int Number of records deleted
      */
     public function purgeMeta()
     {
-        $this->meta()->delete();
+        return Meta::metable(static::class, $this->id)
+            ->delete();
     }
 
-    /**
-     * Check if meta key exists
-     *
-     * @param $key
-     *
-     * @return bool
-     */
-    public function hasMetaKey($key)
-    {
-        return $this->meta()->where('key', $key)->exists();
-    }
+    //
+    // Scopes
+    //
 
     /**
      * Filter all models which has given meta key value pair

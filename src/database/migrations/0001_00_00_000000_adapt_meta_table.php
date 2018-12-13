@@ -15,7 +15,7 @@ class AdaptMetaTable extends Migration
     {
         Schema::table('meta', function (Blueprint $table) {
             $table->unsignedBigInteger('metable_id')->default('');
-            $table->string('metable_type', 128)->default('');
+            $table->string('metable_type')->default('');
 
             $table->unique(['realm', 'metable_type', 'metable_id', 'key']);
         });
