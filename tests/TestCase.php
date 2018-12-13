@@ -19,17 +19,25 @@ class TestCase extends OrchestraTestCase
     {
         parent::setUp();
 
+        //
+        // Factories
+        //
+
         // Load user factory
         $this->withFactories(__DIR__ . '/../tests/database/factories');
+
+        //
+        // Migrations
+        //
 
         // Load vkovic/laravel-meta migrations
         $this->loadMigrationsFrom(__DIR__ . '/../vendor/vkovic/laravel-meta/src/database/migrations');
 
-        // Load package migrations
+        // Load this package migrations
         $this->packageMigrations();
 
-        // Load testing support migrations
-        $this->loadMigrationsFrom(__DIR__ . '/../vendor/laravel/framework/tests/Database/migrations/one/2016_01_01_000000_create_users_table.php');
+        // Load testing migrations
+        $this->loadMigrationsFrom(__DIR__ . '/../tests/database/migrations');
     }
 
     /**
