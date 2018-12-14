@@ -239,63 +239,38 @@ trait HasMetaData
     /**
      * Filter all models which has given meta key value pair
      *
-     * @param Builder $query
-     * @param         $key
-     * @param         $operator
-     * @param null    $value
+     * @param Builder    $query
+     * @param string     $key
+     * @param string     $operator
+     * @param null|mixed $value
      *
-     * @return Builder|static
+     * @return Builder
      */
-    public function scopeWhereMeta(Builder $query, $key, $operator, $value = null)
+    public function scopeWhereMetaValue(Builder $query, $key, $operator, $value = null)
     {
         // If there is no value, it means operator is value
-        if (!isset($value)) {
+        if ($value === null) {
             $value = $operator;
             $operator = '=';
         }
 
         return $query->whereHas('meta', function (Builder $q) use ($key, $operator, $value) {
-            list($realm, $metableType) = $this->getMetaIdentifier();
-
-            $q->where([
-                'realm' => $realm,
-                'metable_type' => $metableType,
-                'key' => $key
-            ])->where('value', $operator, $value);
+            $q->where('key', $key)->where('value', $operator, $value);
         });
     }
 
     /**
      * Filter all models which meta contains given key
      *
-     * @param Builder      $query
-     * @param array|string $key
+     * @param Builder $query
+     * @param string  $key
      *
-     * @return Builder|static
+     * @return Builder
      */
-    public function scopeWhereHasMetaKey(Builder $query, $key)
+    public function scopeWhereMetaKey(Builder $query, $key)
     {
         return $query->whereHas('meta', function (Builder $q) use ($key) {
-            list($realm, $metableType) = $this->getMetaIdentifier();
-
-            $q->where([
-                'realm' => $realm,
-                'metable_type' => $metableType,
-            ])->whereIn('key', (array) $key);
+            $q->whereIn('key', (array) $key);
         });
-    }
-
-    /**
-     * Get unique identifier for laravel model in meta table
-     *
-     * @return array
-     */
-    protected function getMetaIdentifier()
-    {
-        return [
-            'laravel-model',
-            get_class($this),
-            $this->getKey()
-        ];
     }
 }

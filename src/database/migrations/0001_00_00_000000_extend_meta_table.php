@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AdaptMetaTable extends Migration
+class ExtendMetaTable extends Migration
 {
     /**
      * Run the migrations.
@@ -18,6 +18,9 @@ class AdaptMetaTable extends Migration
             $table->string('metable_type')->default('');
 
             $table->unique(['realm', 'metable_type', 'metable_id', 'key']);
+
+            // Drop previous (vkovic/laravel-meta) unique
+            $table->dropUnique(['realm', 'key']);
         });
     }
 
@@ -33,6 +36,9 @@ class AdaptMetaTable extends Migration
             $table->dropColumn('metable_type');
 
             $table->dropUnique(['realm', 'metable_type', 'metable_id', 'key']);
+
+            // Return previous (vkovic/laravel-meta) unique
+            $table->dropUnique(['realm', 'key']);
         });
     }
 }

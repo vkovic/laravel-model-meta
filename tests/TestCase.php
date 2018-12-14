@@ -20,45 +20,33 @@ class TestCase extends OrchestraTestCase
         parent::setUp();
 
         //
+        // Migrations
+        //
+
+        // Load migrations defined in service provider
+        $this->artisan('migrate');
+
+        // Load testing migrations
+        $this->loadMigrationsFrom(__DIR__ . '/../tests/database/migrations');
+
+        //
         // Factories
         //
 
         // Load user factory
         $this->withFactories(__DIR__ . '/../tests/database/factories');
-
-        //
-        // Migrations
-        //
-
-        // Load vkovic/laravel-meta migrations
-        $this->loadMigrationsFrom(__DIR__ . '/../vendor/vkovic/laravel-meta/src/database/migrations');
-
-        // Load this package migrations
-        $this->packageMigrations();
-
-        // Load testing migrations
-        $this->loadMigrationsFrom(__DIR__ . '/../tests/database/migrations');
-    }
-
-    /**
-     * Run default package migrations
-     *
-     * @return void
-     */
-    protected function packageMigrations()
-    {
-        $this->artisan('migrate');
     }
 
     /**
      * Get package providers
      *
-     * @param  \Illuminate\Foundation\Application $app
+     * @param \Illuminate\Foundation\Application $app
      *
      * @return array
      */
     protected function getPackageProviders($app)
     {
+        // This will also load migrations defined in the service provider
         return [LaravelModelMetaServiceProvider::class];
     }
 
