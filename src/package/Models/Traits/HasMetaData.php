@@ -267,7 +267,7 @@ trait HasMetaData
      *
      * @return Builder
      */
-    public function scopeWhereMetaKey(Builder $query, $key)
+    public function scopeWhereHasMetaKey(Builder $query, $key)
     {
         return $query->whereHas('meta', function (Builder $q) use ($key) {
             $q->whereIn('key', (array) $key);
