@@ -27,14 +27,14 @@ class TestCase extends OrchestraTestCase
         $this->artisan('migrate');
 
         // Load testing migrations
-        $this->loadMigrationsFrom(__DIR__ . '/../tests/database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
         //
         // Factories
         //
 
         // Load user factory
-        $this->withFactories(__DIR__ . '/../tests/database/factories');
+        $this->withFactories(__DIR__ . '/database/factories');
     }
 
     /**
@@ -63,6 +63,18 @@ class TestCase extends OrchestraTestCase
         $app['config']->set('database.connections.testbench', [
             'driver' => 'sqlite',
             'database' => ':memory:',
+        ]);
+    }
+
+    protected function getEnvironmentSetUpREALDB($app)
+    {
+        $app['config']->set('database.default', 'testbench');
+        $app['config']->set('database.connections.testbench', [
+            'driver' => 'mysql',
+            'host' => 'localhost',
+            'username' => 'root',
+            'password' => 'root',
+            'database' => 'testbench',
         ]);
     }
 }

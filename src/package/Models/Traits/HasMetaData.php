@@ -237,7 +237,7 @@ trait HasMetaData
     //
 
     /**
-     * Filter all models which has given meta key value pair
+     * Filter all models by providing meta data
      *
      * @param Builder    $query
      * @param string     $key
@@ -245,8 +245,10 @@ trait HasMetaData
      * @param null|mixed $value
      *
      * @return Builder
+     *
+     * @throws \Exception
      */
-    public function scopeWhereMetaValue(Builder $query, $key, $operator, $value = null)
+    public function scopeWhereMeta(Builder $query, $key, $operator, $value = null)
     {
         // If there is no value, it means operator is value
         if ($value === null) {
@@ -254,8 +256,27 @@ trait HasMetaData
             $operator = '=';
         }
 
+        // Prevent invalid operators
+        $validOperators = ['<', '<=', '>', '>=', '=', '<>', '!='];
+        if (!in_array($operator, $validOperators)) {
+            throw new \Exception('Invalid operator. Allowed: ' . implode(', ', $validOperators));
+        }
+
+        // Convert array to json for raw comparison
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
+
         return $query->whereHas('meta', function (Builder $q) use ($key, $operator, $value) {
-            $q->where('key', $key)->where('value', $operator, $value);
+            $q->where('key', $key);
+
+            // TODO: test != operator
+            if (strpos($operator, '<') !== false || strpos($operator, '>') !== false) {
+                // TODO: sql injection prevention here
+                $q->whereRaw("CAST(`value` AS UNSIGNED) $operator '$value'");
+            } else {
+                $q->where('key', $key)->where('value', $operator, $value);
+            }
         });
     }
 

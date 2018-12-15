@@ -14,7 +14,7 @@ class ExtendMetaTable extends Migration
     public function up()
     {
         Schema::table('meta', function (Blueprint $table) {
-            $table->unsignedBigInteger('metable_id')->default('');
+            $table->unsignedBigInteger('metable_id')->default(0);
             $table->string('metable_type')->default('');
 
             $table->unique(['realm', 'metable_type', 'metable_id', 'key']);
