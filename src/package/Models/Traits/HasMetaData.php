@@ -3,6 +3,7 @@
 namespace Vkovic\LaravelModelMeta\Models\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Vkovic\LaravelModelMeta\Models\Meta;
 
@@ -43,6 +44,7 @@ trait HasMetaData
      */
     public function setMeta($key, $value, $type = 'string')
     {
+        /** @var Model $this */
         $meta = Meta::metable(static::class, $this->id)
             ->where('key', $key)->first();
 
@@ -71,6 +73,7 @@ trait HasMetaData
      */
     public function createMeta($key, $value, $type = 'string')
     {
+        /** @var Model $this */
         $exists = Meta::metable(static::class, $this->id)
             ->where('key', $key)->exists();
 
@@ -104,6 +107,7 @@ trait HasMetaData
     public function updateMeta($key, $value, $type = 'string')
     {
         try {
+            /** @var Model $this */
             $meta = Meta::metable(static::class, $this->id)
                 ->where('key', $key)->firstOrFail();
         } catch (\Exception $e) {
@@ -131,6 +135,7 @@ trait HasMetaData
      */
     public function getMeta($key, $default = null)
     {
+        /** @var Model $this */
         $meta = Meta::metable(static::class, $this->id)
             ->where('key', $key)->first();
 
@@ -150,6 +155,7 @@ trait HasMetaData
      */
     public function metaExists($key)
     {
+        /** @var Model $this */
         return Meta::metable(static::class, $this->id)
             ->where('key', $key)->exists();
     }
@@ -165,6 +171,7 @@ trait HasMetaData
      */
     public function countMeta()
     {
+        /** @var Model $this */
         return Meta::metable(static::class, $this->id)
             ->count();
     }
@@ -178,6 +185,7 @@ trait HasMetaData
      */
     public function allMeta()
     {
+        /** @var Model $this */
         $meta = Meta::metable(static::class, $this->id)
             ->get(['key', 'value', 'type']);
 
@@ -198,6 +206,7 @@ trait HasMetaData
      */
     public function metaKeys()
     {
+        /** @var Model $this */
         return Meta::metable(static::class, $this->id)
             ->pluck('key')
             ->toArray();
@@ -214,6 +223,7 @@ trait HasMetaData
     {
         $keys = (array) $key;
 
+        /** @var Model $this */
         Meta::metable(static::class, $this->id)
             ->whereIn('key', $keys)
             ->delete();
@@ -228,6 +238,7 @@ trait HasMetaData
      */
     public function purgeMeta()
     {
+        /** @var Model $this */
         return Meta::metable(static::class, $this->id)
             ->delete();
     }

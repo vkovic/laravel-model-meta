@@ -120,7 +120,7 @@ class GetModelsThroughMetaTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_on_wront_operator()
+    public function it_throws_exception_on_wrong_operator()
     {
         $this->expectExceptionMessage('Invalid operator');
 
