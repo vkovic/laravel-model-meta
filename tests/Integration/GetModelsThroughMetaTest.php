@@ -61,23 +61,33 @@ class GetModelsThroughMetaTest extends TestCase
     /**
      * @test
      */
-    public function it_can_get_models_by_key_and_compared_value()
+    public function it_can_get_models_by_key_and_value_using_comparison()
     {
         $totalUsers = rand(0, 100);
-        $adults = 0;
+        $adults = $working = 0;
 
         $users = factory(User::class, $totalUsers)->create();
 
         foreach ($users as $user) {
-            $age = rand(1, 100);
+            $age = rand(0, 100);
+            $employed = (bool) rand(0, 1);
 
             if ($age >= 18) {
                 $adults++;
             }
 
+            if ($employed) {
+                $working++;
+            }
+
+            $user->setMeta('employed', $employed);
             $user->setMeta('age', $age);
         }
 
+        $withoutJobs = $totalUsers - $working;
+
+        $this->assertEquals($withoutJobs, User::whereMeta('employed', '<>', true)->count());
+        $this->assertEquals($withoutJobs, User::whereMeta('employed', '!=', true)->count());
         $this->assertEquals($adults, User::whereMeta('age', '>=', '18')->count());
         $this->assertEquals($adults, User::whereMeta('age', '>=', 18)->count());
     }
@@ -85,7 +95,7 @@ class GetModelsThroughMetaTest extends TestCase
     /**
      * @test
      */
-    public function it_can_get_models_by_meta_key()
+    public function it_can_get_models_by_meta_key_or_keys()
     {
         $totalUsers = rand(0, 100);
         $admins = $managers = 0;
@@ -102,7 +112,18 @@ class GetModelsThroughMetaTest extends TestCase
             }
         }
 
+        $this->assertEquals($totalUsers, User::whereHasMetaKey(['admin', 'manager'])->count());
         $this->assertEquals($admins, User::whereHasMetaKey('admin')->count());
         $this->assertEquals($managers, User::whereHasMetaKey('manager')->count());
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_on_wront_operator()
+    {
+        $this->expectExceptionMessage('Invalid operator');
+
+        User::whereMeta('foo', '><', 'bar');
     }
 }

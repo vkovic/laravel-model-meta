@@ -270,10 +270,10 @@ trait HasMetaData
         return $query->whereHas('meta', function (Builder $q) use ($key, $operator, $value) {
             $q->where('key', $key);
 
-            // TODO: test != operator
+            // In case we're using compare operators, we need to perform some casting because
+            // all our values are written as string in database.
             if (strpos($operator, '<') !== false || strpos($operator, '>') !== false) {
-                // TODO: sql injection prevention here
-                $q->whereRaw("CAST(`value` AS UNSIGNED) $operator '$value'");
+                $q->where(\DB::raw("CAST(`value` AS UNSIGNED)"), $operator, $value);
             } else {
                 $q->where('key', $key)->where('value', $operator, $value);
             }
