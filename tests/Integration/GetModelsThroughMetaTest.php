@@ -18,26 +18,22 @@ class GetModelsThroughMetaTest extends TestCase
     }
 
     /**
-     * Data provider for: key, value and type
+     * Data provider for: key and value
      *
      * @return array
      */
     public function keyValueProvider()
     {
         return [
-            // key | value | type
+            // key | value
             [str_random(), str_random()],
-            [str_random(), str_random(), 'string'],
             [str_random(), null],
-            [str_random(), null, 'null'],
-            [str_random(), 1, 'int'],
-            [str_random(), 1.1, 'float'],
-            [str_random(), true, 'boolean'],
-            [str_random(), false, 'boolean'],
+            [str_random(), 1],
+            [str_random(), 1.1],
+            [str_random(), true],
+            [str_random(), false],
             [str_random(), []],
-            [str_random(), [], 'array'],
             [str_random(), range(1, 10)],
-            [str_random(), range(1, 10), 'array'],
         ];
     }
 
@@ -45,15 +41,11 @@ class GetModelsThroughMetaTest extends TestCase
      * @test
      * @dataProvider keyValueProvider
      */
-    public function it_can_get_models_by_key_and_value($key, $value, $type = null)
+    public function it_can_get_models_by_key_and_value($key, $value)
     {
         $user = factory(User::class)->create();
 
-        if ($type == null) {
-            $user->setMeta($key, $value);
-        } else {
-            $user->setMeta($key, $value, $type);
-        }
+        $user->setMeta($key, $value);
 
         $this->assertEquals($user->id, User::whereMeta($key, $value)->first()->id);
     }

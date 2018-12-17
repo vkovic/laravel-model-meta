@@ -6,7 +6,7 @@ use Vkovic\LaravelModelMeta\Models\Meta;
 use Vkovic\LaravelModelMeta\Test\Support\Models\User;
 use Vkovic\LaravelModelMeta\Test\TestCase;
 
-class ModelCanUseMetaTest extends TestCase
+class ModelCanHandleMetaTest extends TestCase
 {
     /**
      * Valid data provider for: key, value and type
@@ -159,7 +159,6 @@ class ModelCanUseMetaTest extends TestCase
 
     /**
      * @test
-     * @group qwe
      */
     public function it_can_count_meta()
     {

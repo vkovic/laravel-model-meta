@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Vkovic\LaravelModelMeta\Models\Meta;
 
-trait HasMetaData
+trait HasMetadata
 {
     /**
      * Initialize the trait

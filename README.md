@@ -7,10 +7,8 @@
 
 ### Laravel Model meta storage
 
-Easily store and access model related metadata.
-
-Avoid cluttering your models table with more fields. If you dont need them you can just unplug trait from your model
-and delete related data.
+Easily store and access model related metadata 
+and avoid cluttering your models table with more fields.
 
 ---
 
@@ -26,33 +24,182 @@ Install the package via composer:
 composer require vkovic/laravel-model-meta
 ```
 
-The package needs to be registered in service providers:
+The package needs to be registered in service providers, so just add it to providers array:
 
 ```php
 // File: config/app.php
 
 // ...
 
-/*
- * Package Service Providers...
- */
+'providers' => [
 
-// ...
+    /*
+     * Package Service Providers...
+     */
 
-Vkovic\LaravelModelMeta\Providers\LaravelModelMetaServiceProvider::class,
+    // ...
+
+    Vkovic\LaravelModelMeta\Providers\LaravelModelMetaServiceProvider::class,
+
+    // ...
+];
 ```
 
-Run migrations to create table which will be used to store our meta data:
+Run migrations to create table which will be used to store our model metadata:
 
 ```bash
 php artisan migrate
 ```
 
-> If you installed vkovic/laravel-meta previously, this package will use the same table, because logic is based on
-> polymorphic relations and both packages are fully compatible, and you can use both simultaneously.
+## Usage: Simple Examples
 
----
----
----
+To be able to write metadata from our model object, we'll need to add trait `HasMetadata`
+to the model we want to associate metadata with. 
+Let's take Laravel default `User` model as an example:
 
-TODO ...
+```php
+namespace App\Models;
+
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Vkovic\LaravelModelMeta\Models\Traits\HasMetadata;
+
+class User extends Authenticatable
+{
+    use Notifiable, HasMetadata;
+    
+    // ...
+}
+```
+
+Also lets assume that we already have users in our users table. 
+We'll need a random one for the examples below:
+
+```php
+// ...
+
+use App\Models\User;
+
+//...
+
+$user = User::inRandomOrder()->first();
+```
+
+Let's create and retrieve some metadata:
+
+```php
+// Set meta value as string
+$user->setMeta('foo', 'bar');
+
+// Get meta value
+$user->getMeta('foo')) // : 'bar'
+
+// In case there is no metadata found for given key,
+// we can pass default value to return
+$user->getMeta('baz', 'default'); // : 'default'
+```
+
+Beside string, metadata can also be stored as integer, float, null, boolean or array:
+
+```php
+$user->setMeta('age', 35);
+$user->setMeta('temperature', 24.7);
+$user->setMeta('value', null);
+$user->setMeta('employed', true);
+$user->setMeta('fruits', ['orange', 'apple']);
+
+$user->getMeta('age')) // : 35
+$user->getMeta('temperature')) // : 24.7
+$user->getMeta('value', null); // : null
+$user->getMeta('employed'); // : true
+$user->getMeta('fruits', ['orange', 'apple']); // : ['orange', 'apple']
+```
+
+We can easily check if meta exists without actually retrieving it from meta table:
+
+```php
+$user->setMeta('foo', 'bar');
+
+$user->metaExists('foo'); // : true
+```
+
+Counting all meta records is also a breeze:
+
+```php
+$user->setMeta('a', 'one');
+$user->setMeta('b', 'two');
+
+$user->countMeta(); // : 2
+```
+
+If we need all metadata, or just keys, no problem:
+
+```php
+$user->setMeta('a', 'one');
+$user->setMeta('b', 'two');
+$user->setMeta('c', 'three');
+
+// Get all metadata
+$user->allMeta(); // : ['a' => 'one', 'b' => 'two', 'c' => 'three']
+
+// Get only keys
+$user->metaKeys(); // : [0 => 'a', 1 => 'b', 2 => 'c']
+```
+
+Also, we can remove meta easily:
+
+```php
+$user->setMeta('a', 'one');
+$user->setMeta('b', 'two');
+$user->setMeta('c', 'three');
+
+// Remove meta by key
+$user->removeMeta('a');
+
+// Or array of keys
+$user->removeMeta(['b', 'c']);
+```
+
+If, for some reason, we want to delete all meta related to this user at once, no problem:
+
+```php
+$user->purgeMeta();
+```
+
+## Usage: Retrieve models through meta scopes
+
+`HasMetadata` trait also provides functionality to filter models with specific meta,
+let's take a look at examples below:
+
+```php
+$user->setMeta('age', 35);
+
+// Equals operator
+User::whereMeta('age', '=', 35)->get();
+// or shorther
+User::whereMeta('age', 35)->get();
+
+// Comparison operators
+User::whereMeta('age', '>', 18)->get();
+User::whereMeta('age', '!=', 20)->get();
+// or with other comparison operators (<, <=, >, >=, =, <>, !=)
+
+// All of the examples above will return Collection of users which meet's criteria,
+// in this case our $user
+```
+
+Beside filtering users against meta value, we can also perform filtering based on meta key:
+
+```php
+$user->setMeta('company', 'Acme');
+$anotherUser->setMeta('role', 'admin');
+
+// Meta key
+User::whereHasMetaKey('manager')->get();
+
+// Array of keys
+User::whereHasMetaKey(['company', 'role'])->get();
+
+// All of the examples above will return Collection of users which meet's criteria,
+// in this case our $user and $anotherUser
+```
