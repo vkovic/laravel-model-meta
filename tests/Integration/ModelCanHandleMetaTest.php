@@ -1,35 +1,45 @@
 <?php
 
-namespace Vkovic\LaravelModelMeta\Test\Integration;
+namespace Vkovic\LaravelMeta\Test\Unit;
 
 use Vkovic\LaravelModelMeta\Models\Meta;
 use Vkovic\LaravelModelMeta\Test\Support\Models\User;
 use Vkovic\LaravelModelMeta\Test\TestCase;
 
-class ModelCanHandleMetaTest extends TestCase
+class MetaFacadeTest extends TestCase
 {
     /**
-     * Valid data provider for: key, value and type
+     * Valid data provider for: key and value
      *
      * @return array
      */
-    public function keyValueTypeProvider()
+    public function keyValueProvider()
     {
         return [
-            // key | value | type
+            // key | value
             [str_random(), str_random()],
-            [str_random(), str_random(), 'string'],
             [str_random(), null],
-            [str_random(), null, 'null'],
-            [str_random(), 1, 'int'],
-            [str_random(), 1.1, 'float'],
-            [str_random(), true, 'boolean'],
-            [str_random(), false, 'boolean'],
+            [str_random(), 1],
+            [str_random(), 1.1],
+            [str_random(), true],
+            [str_random(), false],
             [str_random(), []],
-            [str_random(), [], 'array'],
             [str_random(), range(1, 10)],
-            [str_random(), range(1, 10), 'array'],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_saves_to_correct_realm()
+    {
+        $user = factory(User::class)->create();
+
+        $user->setMeta('foo', '');
+
+        $this->assertDatabaseHas('meta', [
+            'realm' => Meta::getRealm()
+        ]);
     }
 
     /**
@@ -52,57 +62,43 @@ class ModelCanHandleMetaTest extends TestCase
 
     /**
      * @test
-     * @dataProvider keyValueTypeProvider
+     * @dataProvider keyValueProvider
      */
-    public function it_can_set_and_get_meta($key, $value, $type = null)
+    public function it_can_set_and_get_meta($key, $value)
     {
         $user = factory(User::class)->create();
 
-        if ($type === null) {
-            $user->setMeta($key, $value);
-        } else {
-            $user->setMeta($key, $value, $type);
-        }
+        $user->setMeta($key, $value);
 
         $this->assertSame($user->getMeta($key), $value);
     }
 
     /**
      * @test
-     * @dataProvider keyValueTypeProvider
+     * @dataProvider keyValueProvider
      */
-    public function it_can_create_meta($key, $value, $type = null)
+    public function it_can_create_meta($key, $value)
     {
         $user = factory(User::class)->create();
 
-        if ($type === null) {
-            $user->setMeta($key, $value);
-            $user->updateMeta($key, $value);
-        } else {
-            $user->setMeta($key, $value, $type);
-            $user->updateMeta($key, $value, $type);
-        }
+        $user->createMeta($key, $value);
 
         $this->assertSame($user->getMeta($key), $value);
     }
 
     /**
      * @test
-     * @dataProvider keyValueTypeProvider
+     * @dataProvider keyValueProvider
      */
-    public function it_can_update_meta($key, $value, $type = null)
+    public function it_can_update_meta($key, $value)
     {
+        $newValue = str_random();
         $user = factory(User::class)->create();
 
-        if ($type === null) {
-            $user->setMeta($key, $value);
-            $user->updateMeta($key, $value);
-        } else {
-            $user->setMeta($key, $value, $type);
-            $user->updateMeta($key, $value, $type);
-        }
+        $user->setMeta($key, $value);
+        $user->updateMeta($key, $newValue);
 
-        $this->assertSame($user->getMeta($key), $value);
+        $this->assertSame($user->getMeta($key), $newValue);
     }
 
     /**
@@ -136,16 +132,16 @@ class ModelCanHandleMetaTest extends TestCase
      */
     public function it_will_return_default_value_when_key_not_exist()
     {
-        $user = factory(User::class)->create();
-
         $default = str_random();
+
+        $user = factory(User::class)->create();
 
         $this->assertEquals($default, $user->getMeta('nonExistingKey', $default));
     }
 
     /**
      * @test
-     * @dataProvider keyValueTypeProvider
+     * @dataProvider keyValueProvider
      */
     public function it_can_check_meta_exists($key, $value)
     {
@@ -162,14 +158,9 @@ class ModelCanHandleMetaTest extends TestCase
      */
     public function it_can_count_meta()
     {
-        \DB::table((new Meta)->getTable())->truncate();
-
-        //
-        // Check zero count
-        //
-
         $user = factory(User::class)->create();
 
+        // Check zero count
         $this->assertTrue($user->countMeta() === 0);
 
         //
@@ -191,8 +182,6 @@ class ModelCanHandleMetaTest extends TestCase
      */
     public function it_can_get_all_meta()
     {
-        \DB::table((new Meta)->getTable())->truncate();
-
         $user = factory(User::class)->create();
 
         $key1 = str_random();
@@ -200,7 +189,7 @@ class ModelCanHandleMetaTest extends TestCase
         $user->setMeta($key1, $value1);
 
         $key2 = str_random();
-        $value2 = str_random();
+        $value2 = range(0, 10);
         $user->setMeta($key2, $value2);
 
         $this->assertEquals([
@@ -209,24 +198,17 @@ class ModelCanHandleMetaTest extends TestCase
         ], $user->allMeta());
     }
 
-
     /**
      * @test
      */
     public function it_can_get_all_keys()
     {
-        \DB::table((new Meta)->getTable())->truncate();
-
         $user = factory(User::class)->create();
 
-        $count = rand(0, 10);
-
-        if ($count === 0) {
-            $this->assertEmpty($user->metaKeys());
-        }
+        $this->assertEmpty($user->metaKeys());
 
         $keysToSave = [];
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < rand(1, 10); $i++) {
             $key = str_random();
             $keysToSave[] = $key;
 
@@ -245,8 +227,6 @@ class ModelCanHandleMetaTest extends TestCase
      */
     public function it_can_remove_meta_by_key()
     {
-        \DB::table((new Meta)->getTable())->truncate();
-
         $user = factory(User::class)->create();
 
         $key = str_random();
@@ -255,7 +235,7 @@ class ModelCanHandleMetaTest extends TestCase
         $user->setMeta($key, $value);
         $user->removeMeta($key);
 
-        $this->assertEmpty($user->allMeta());
+        $this->assertEquals(0, $user->countMeta());
     }
 
     /**
@@ -274,6 +254,6 @@ class ModelCanHandleMetaTest extends TestCase
 
         $user->purgeMeta();
 
-        $this->assertEmpty($user->allMeta());
+        $this->assertEquals(0, $user->countMeta());
     }
 }
