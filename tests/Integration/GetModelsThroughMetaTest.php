@@ -12,7 +12,7 @@ class GetModelsThroughMetaTest extends TestCase
         parent::setUp();
 
         // Add some related random db entries to avoid possible mistakes in further testing
-        foreach (factory(User::class, rand(10, 100))->create() as $user) {
+        foreach (factory(User::class, 20)->create() as $user) {
             $user->setMeta(str_random(), str_random());
         }
     }
@@ -64,13 +64,14 @@ class GetModelsThroughMetaTest extends TestCase
     public function it_can_get_models_by_key_and_value_using_comparison()
     {
         $totalUsers = rand(0, 100);
-        $adults = $working = 0;
+        $adults = $working = $withTopScore = 0;
 
         $users = factory(User::class, $totalUsers)->create();
 
         foreach ($users as $user) {
             $age = rand(0, 100);
             $employed = (bool) rand(0, 1);
+            $score = rand(1, 100) / 10;
 
             if ($age >= 18) {
                 $adults++;
@@ -80,16 +81,28 @@ class GetModelsThroughMetaTest extends TestCase
                 $working++;
             }
 
+            if ($score > 9.1) {
+                $withTopScore++;
+            }
+
             $user->setMeta('employed', $employed);
             $user->setMeta('age', $age);
+            $user->setMeta('score', $score);
         }
 
+        // Test comparing bool
         $withoutJobs = $totalUsers - $working;
-
         $this->assertEquals($withoutJobs, User::whereMeta('employed', '<>', true)->count());
         $this->assertEquals($withoutJobs, User::whereMeta('employed', '!=', true)->count());
+
+        // Test comparing int
         $this->assertEquals($adults, User::whereMeta('age', '>=', '18')->count());
         $this->assertEquals($adults, User::whereMeta('age', '>=', 18)->count());
+
+        // Test comparing float
+        $withoutTopScore = $totalUsers - $withTopScore;
+        $this->assertEquals($withTopScore, User::whereMeta('score', '>', 9.1)->count());
+        $this->assertEquals($withoutTopScore, User::whereMeta('score', '<=', 9.1)->count());
     }
 
     /**

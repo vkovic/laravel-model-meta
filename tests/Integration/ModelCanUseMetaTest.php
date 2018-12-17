@@ -34,6 +34,24 @@ class ModelCanUseMetaTest extends TestCase
 
     /**
      * @test
+     */
+    public function it_purges_meta_on_model_deletion()
+    {
+        $user = factory(User::class)->create();
+
+        $user->setMeta('foo', 'bar');
+        $user->setMeta('bar', 'baz');
+
+        $user->delete();
+
+        $this->assertDatabaseMissing('meta', [
+            'key' => 'foo', 'value' => 'bar',
+            'key' => 'bar', 'value' => 'baz',
+        ]);
+    }
+
+    /**
+     * @test
      * @dataProvider keyValueTypeProvider
      */
     public function it_can_set_and_get_meta($key, $value, $type = null)

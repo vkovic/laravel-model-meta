@@ -17,8 +17,8 @@ trait HasMetaData
     public static function bootHasMetaData()
     {
         // Delete related meta on model deletion
-        static::deleted(function (Meta $meta) {
-            $meta->purgeMeta();
+        static::deleted(function (Model $model) {
+            $model->purgeMeta();
         });
     }
 
@@ -40,9 +40,8 @@ trait HasMetaData
      *
      * @param string $key
      * @param mixed  $value
-     * @param string $type
      */
-    public function setMeta($key, $value, $type = 'string')
+    public function setMeta($key, $value)
     {
         /** @var Model $this */
         $meta = Meta::metable(static::class, $this->id)
@@ -54,7 +53,6 @@ trait HasMetaData
         }
 
         $meta->value = $value;
-        $meta->type = $type;
 
         $this->meta()->save($meta);
     }
@@ -67,11 +65,10 @@ trait HasMetaData
      *
      * @param string $key
      * @param mixed  $value
-     * @param string $type
      *
      * @throws \Exception
      */
-    public function createMeta($key, $value, $type = 'string')
+    public function createMeta($key, $value)
     {
         /** @var Model $this */
         $exists = Meta::metable(static::class, $this->id)
@@ -86,7 +83,6 @@ trait HasMetaData
         $meta = new Meta;
 
         $meta->key = $key;
-        $meta->type = $type;
         $meta->value = $value;
 
         $this->meta()->save($meta);
@@ -100,11 +96,10 @@ trait HasMetaData
      *
      * @param string $key
      * @param mixed  $value
-     * @param string $type
      *
      * @throws \Exception
      */
-    public function updateMeta($key, $value, $type = 'string')
+    public function updateMeta($key, $value)
     {
         try {
             /** @var Model $this */
@@ -117,7 +112,6 @@ trait HasMetaData
             throw new \Exception($message);
         }
 
-        $meta->type = $type;
         $meta->value = $value;
 
         $this->meta()->save($meta);
@@ -281,7 +275,7 @@ trait HasMetaData
         return $query->whereHas('meta', function (Builder $q) use ($key, $operator, $value) {
             $q->where('key', $key);
 
-            // In case we're using compare operators, we need to perform some casting because
+            // In case we're using compare operators, we need to perform casting because
             // all our values are written as string in database.
             if (strpos($operator, '<') !== false || strpos($operator, '>') !== false) {
                 $q->where(\DB::raw("CAST(`value` AS UNSIGNED)"), $operator, $value);
