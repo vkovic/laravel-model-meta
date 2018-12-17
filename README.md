@@ -10,6 +10,13 @@
 Easily store and access model related metadata 
 and avoid cluttering your models table with more fields.
 
+> The package is one of three metadata packages based on the same approach:
+> - vkovic/laravel-model-meta (this package - Laravel model related meta storage)
+> - [vkovic/laravel-meta](https://github.com/vkovic/laravel-meta) (general purpose meta storage)
+> - [vkovic/laravel-settings](https://github.com/vkovic/laravel-settings) (app specific settings meta storage)
+>
+> Packages can be used separately or together. Internally they are using same table and share common logic.
+
 ---
 
 ## Compatibility
