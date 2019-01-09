@@ -115,11 +115,11 @@ $user->setMeta('value', null);
 $user->setMeta('employed', true);
 $user->setMeta('fruits', ['orange', 'apple']);
 
-$user->getMeta('age')) // : 35
-$user->getMeta('temperature')) // : 24.7
-$user->getMeta('value', null); // : null
+$user->getMeta('age'); // : 35
+$user->getMeta('temperature'); // : 24.7
+$user->getMeta('value'); // : null
 $user->getMeta('employed'); // : true
-$user->getMeta('fruits', ['orange', 'apple']); // : ['orange', 'apple']
+$user->getMeta('fruits'); // : ['orange', 'apple']
 ```
 
 We can easily check if meta exists without actually retrieving it from meta table:
