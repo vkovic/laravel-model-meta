@@ -7,15 +7,7 @@
 
 ### Laravel Model meta storage
 
-Easily store and access model related metadata 
-and avoid cluttering your models table with more fields.
-
-> The package is one of three metadata packages based on the same approach:
-> - vkovic/laravel-model-meta (this package - Laravel model related meta storage)
-> - [vkovic/laravel-meta](https://github.com/vkovic/laravel-meta) (general purpose meta storage)
-> - [vkovic/laravel-settings](https://github.com/vkovic/laravel-settings) (app specific settings meta storage)
->
-> Packages can be used separately or together. Internally they are using same table and share common logic.
+Easily store and access model related metadata and avoid cluttering your models table with more fields.
 
 ---
 
@@ -31,37 +23,16 @@ Install the package via composer:
 composer require vkovic/laravel-model-meta
 ```
 
-The package needs to be registered in service providers, so just add it to providers array:
-
-```php
-// File: config/app.php
-
-// ...
-
-'providers' => [
-
-    /*
-     * Package Service Providers...
-     */
-
-    // ...
-
-    Vkovic\LaravelModelMeta\Providers\LaravelModelMetaServiceProvider::class,
-
-    // ...
-];
-```
-
 Run migrations to create table which will be used to store our model metadata:
 
 ```bash
 php artisan migrate
 ```
 
-## Usage: Simple Examples
+## Simple examples
 
 To be able to write metadata from our model object, we'll need to add trait `HasMetadata`
-to the model we want to associate metadata with. 
+to the model we want to associate metadata with.
 Let's take Laravel default `User` model as an example:
 
 ```php
@@ -74,12 +45,12 @@ use Vkovic\LaravelModelMeta\Models\Traits\HasMetadata;
 class User extends Authenticatable
 {
     use Notifiable, HasMetadata;
-    
+
     // ...
 }
 ```
 
-Also lets assume that we already have users in our users table. 
+Also lets assume that we already have users in our users table.
 We'll need a random one for the examples below:
 
 ```php
@@ -92,7 +63,7 @@ use App\Models\User;
 $user = User::inRandomOrder()->first();
 ```
 
-Let's create and retrieve some metadata:
+Let's create and retrieve some metadata for fetched user:
 
 ```php
 // Set meta value as string
@@ -122,7 +93,7 @@ $user->getMeta('employed'); // : true
 $user->getMeta('fruits'); // : ['orange', 'apple']
 ```
 
-We can easily check if meta exists without actually retrieving it from meta table:
+We can easily check if related user meta exists without actually retrieving it from meta table:
 
 ```php
 $user->setMeta('foo', 'bar');
@@ -130,7 +101,7 @@ $user->setMeta('foo', 'bar');
 $user->metaExists('foo'); // : true
 ```
 
-Counting all meta records is also a breeze:
+Counting all related user meta records is also a breeze:
 
 ```php
 $user->setMeta('a', 'one');
@@ -139,7 +110,7 @@ $user->setMeta('b', 'two');
 $user->countMeta(); // : 2
 ```
 
-If we need all metadata, or just keys, no problem:
+If we need all user metadata, or just keys, no problem:
 
 ```php
 $user->setMeta('a', 'one');
@@ -153,7 +124,7 @@ $user->allMeta(); // : ['a' => 'one', 'b' => 'two', 'c' => 'three']
 $user->metaKeys(); // : [0 => 'a', 1 => 'b', 2 => 'c']
 ```
 
-Also, we can remove meta easily:
+Also, we can remove all user meta data easily:
 
 ```php
 $user->setMeta('a', 'one');
@@ -173,7 +144,7 @@ If, for some reason, we want to delete all meta related to this user at once, no
 $user->purgeMeta();
 ```
 
-## Usage: Retrieve models through meta scopes
+## Retrieve models through meta scopes
 
 `HasMetadata` trait also provides functionality to filter models with specific meta,
 let's take a look at examples below:
@@ -210,3 +181,12 @@ User::whereHasMetaKey(['company', 'role'])->get();
 // All of the examples above will return Collection of users which meet's criteria,
 // in this case our $user and $anotherUser
 ```
+
+## Similar packages
+
+The package is one of three metadata packages based on the same approach:
+- vkovic/laravel-model-meta (this package - Laravel model related meta storage)
+- [vkovic/laravel-meta](https://github.com/vkovic/laravel-meta) (general purpose meta storage)
+- [vkovic/laravel-settings](https://github.com/vkovic/laravel-settings) (app specific settings meta storage)
+
+Packages can be used separately or together. Internally they are using same table and share common logic.
