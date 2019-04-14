@@ -44,7 +44,7 @@ use Vkovic\LaravelModelMeta\Models\Traits\HasMetadata;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasMetadata;
+    use Notifiable, HasMetadata; // <= trait is added here
 
     // ...
 }
@@ -54,12 +54,6 @@ Also lets assume that we already have users in our users table.
 We'll need a random one for the examples below:
 
 ```php
-// ...
-
-use App\Models\User;
-
-//...
-
 $user = User::inRandomOrder()->first();
 ```
 
@@ -70,7 +64,7 @@ Let's create and retrieve some metadata for fetched user:
 $user->setMeta('foo', 'bar');
 
 // Get meta value
-$user->getMeta('foo')) // : 'bar'
+$user->getMeta('foo'); // : 'bar'
 
 // In case there is no metadata found for given key,
 // we can pass default value to return
@@ -181,6 +175,27 @@ User::whereHasMetaKey(['company', 'role'])->get();
 // All of the examples above will return Collection of users which meet's criteria,
 // in this case our $user and $anotherUser
 ```
+
+---
+
+## Contributing
+
+If you plan to modify this Laravel package you should run tests that comes with it.
+Easiest way to accomplish this would be with `Docker`, `docker-compose` and `phpunit`.
+
+First, we need to initialize Docker containers:
+
+```bash
+docker-compose up -d
+```
+
+After that, we can run tests and watch the output:
+
+```bash
+docker-compose exec app vendor/bin/phpunit
+```
+
+---
 
 ## Similar packages
 
