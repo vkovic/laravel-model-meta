@@ -2,18 +2,19 @@
 
 namespace Vkovic\LaravelModelMeta\Test\Integration;
 
+use Illuminate\Support\Str;
 use Vkovic\LaravelModelMeta\Test\Support\Models\User;
 use Vkovic\LaravelModelMeta\Test\TestCase;
 
 class GetModelsThroughMetaTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
         // Add some related random db entries to avoid possible mistakes in further testing
         foreach (factory(User::class, 20)->create() as $user) {
-            $user->setMeta(str_random(), str_random());
+            $user->setMeta(Str::random(), Str::random());
         }
     }
 
@@ -26,14 +27,14 @@ class GetModelsThroughMetaTest extends TestCase
     {
         return [
             // key | value
-            [str_random(), str_random()],
-            [str_random(), null],
-            [str_random(), 1],
-            [str_random(), 1.1],
-            [str_random(), true],
-            [str_random(), false],
-            [str_random(), []],
-            [str_random(), range(1, 10)],
+            [Str::random(), Str::random()],
+            [Str::random(), null],
+            [Str::random(), 1],
+            [Str::random(), 1.1],
+            [Str::random(), true],
+            [Str::random(), false],
+            [Str::random(), []],
+            [Str::random(), range(1, 10)],
         ];
     }
 

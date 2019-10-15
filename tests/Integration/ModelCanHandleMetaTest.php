@@ -2,6 +2,7 @@
 
 namespace Vkovic\LaravelMeta\Test\Unit;
 
+use Illuminate\Support\Str;
 use Vkovic\LaravelModelMeta\Models\Meta;
 use Vkovic\LaravelModelMeta\Test\Support\Models\User;
 use Vkovic\LaravelModelMeta\Test\TestCase;
@@ -17,14 +18,14 @@ class MetaFacadeTest extends TestCase
     {
         return [
             // key | value
-            [str_random(), str_random()],
-            [str_random(), null],
-            [str_random(), 1],
-            [str_random(), 1.1],
-            [str_random(), true],
-            [str_random(), false],
-            [str_random(), []],
-            [str_random(), range(1, 10)],
+            [Str::random(), Str::random()],
+            [Str::random(), null],
+            [Str::random(), 1],
+            [Str::random(), 1.1],
+            [Str::random(), true],
+            [Str::random(), false],
+            [Str::random(), []],
+            [Str::random(), range(1, 10)],
         ];
     }
 
@@ -92,7 +93,7 @@ class MetaFacadeTest extends TestCase
      */
     public function it_can_update_meta($key, $value)
     {
-        $newValue = str_random();
+        $newValue = Str::random();
         $user = factory(User::class)->create();
 
         $user->setMeta($key, $value);
@@ -132,7 +133,7 @@ class MetaFacadeTest extends TestCase
      */
     public function it_will_return_default_value_when_key_not_exist()
     {
-        $default = str_random();
+        $default = Str::random();
 
         $user = factory(User::class)->create();
 
@@ -150,7 +151,7 @@ class MetaFacadeTest extends TestCase
         $user->setMeta($key, $value);
 
         $this->assertTrue($user->metaExists($key));
-        $this->assertFalse($user->metaExists(str_random()));
+        $this->assertFalse($user->metaExists(Str::random()));
     }
 
     /**
@@ -169,8 +170,8 @@ class MetaFacadeTest extends TestCase
 
         $count = rand(0, 10);
         for ($i = 0; $i < $count; $i++) {
-            $key = str_random();
-            $value = str_random();
+            $key = Str::random();
+            $value = Str::random();
             $user->setMeta($key, $value);
         }
 
@@ -184,11 +185,11 @@ class MetaFacadeTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $key1 = str_random();
-        $value1 = str_random();
+        $key1 = Str::random();
+        $value1 = Str::random();
         $user->setMeta($key1, $value1);
 
-        $key2 = str_random();
+        $key2 = Str::random();
         $value2 = range(0, 10);
         $user->setMeta($key2, $value2);
 
@@ -209,7 +210,7 @@ class MetaFacadeTest extends TestCase
 
         $keysToSave = [];
         for ($i = 0; $i < rand(1, 10); $i++) {
-            $key = str_random();
+            $key = Str::random();
             $keysToSave[] = $key;
 
             $user->setMeta($key, '');
@@ -229,8 +230,8 @@ class MetaFacadeTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $key = str_random();
-        $value = str_random();
+        $key = Str::random();
+        $value = Str::random();
 
         $user->setMeta($key, $value);
         $user->removeMeta($key);
@@ -247,8 +248,8 @@ class MetaFacadeTest extends TestCase
 
         $count = rand(0, 10);
         for ($i = 0; $i < $count; $i++) {
-            $key = str_random();
-            $value = str_random();
+            $key = Str::random();
+            $value = Str::random();
             $user->setMeta($key, $value);
         }
 

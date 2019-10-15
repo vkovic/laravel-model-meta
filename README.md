@@ -13,7 +13,7 @@ Easily store and access model related metadata and avoid cluttering your models 
 
 ## Compatibility
 
-The package is compatible with Laravel versions `>= 5.5`
+The package is compatible with **Laravel** versions `5.5`, `5.6`, `5.7`, `5.8` and `6`.
 
 ## Installation
 
