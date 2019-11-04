@@ -14,8 +14,8 @@ class ExtendMetaTable extends Migration
     public function up()
     {
         Schema::table('meta', function (Blueprint $table) {
-            $table->unsignedBigInteger('metable_id')->default(0);
-            $table->string('metable_type')->default('');
+            $table->unsignedBigInteger('metable_id')->default(0)->after('type');
+            $table->string('metable_type')->default('')->after('metable_id');
 
             $table->unique(['realm', 'metable_type', 'metable_id', 'key']);
 
@@ -38,7 +38,7 @@ class ExtendMetaTable extends Migration
             $table->dropUnique(['realm', 'metable_type', 'metable_id', 'key']);
 
             // Return previous (vkovic/laravel-meta) unique
-            $table->dropUnique(['realm', 'key']);
+            $table->unique(['realm', 'key']);
         });
     }
 }
