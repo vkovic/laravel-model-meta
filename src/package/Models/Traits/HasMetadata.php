@@ -3,8 +3,8 @@
 namespace Vkovic\LaravelModelMeta\Models\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface;
 use Vkovic\LaravelModelMeta\Models\Meta;
 
 trait HasMetadata
@@ -17,7 +17,7 @@ trait HasMetadata
     public static function bootHasMetaData()
     {
         // Delete related meta on model deletion
-        static::deleted(function (Model $model) {
+        static::deleted(function (HasMetadataInterface $model) {
             $model->purgeMeta();
         });
     }
@@ -43,7 +43,7 @@ trait HasMetadata
      */
     public function setMeta($key, $value)
     {
-        /** @var Model $this */
+        /** @var \Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface; $this */
         $meta = Meta::metable(static::class, $this->id)
             ->where('key', $key)->first();
 
@@ -70,7 +70,7 @@ trait HasMetadata
      */
     public function createMeta($key, $value)
     {
-        /** @var Model $this */
+        /** @var \Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface; $this */
         $exists = Meta::metable(static::class, $this->id)
             ->where('key', $key)->exists();
 
@@ -102,7 +102,7 @@ trait HasMetadata
     public function updateMeta($key, $value)
     {
         try {
-            /** @var Model $this */
+            /** @var \Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface; $this */
             $meta = Meta::metable(static::class, $this->id)
                 ->where('key', $key)->firstOrFail();
         } catch (\Exception $e) {
@@ -129,7 +129,7 @@ trait HasMetadata
      */
     public function getMeta($key, $default = null)
     {
-        /** @var Model $this */
+        /** @var \Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface; $this */
         $meta = Meta::metable(static::class, $this->id)
             ->where('key', $key)->first();
 
@@ -149,7 +149,7 @@ trait HasMetadata
      */
     public function metaExists($key)
     {
-        /** @var Model $this */
+        /** @var \Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface; $this */
         return Meta::metable(static::class, $this->id)
             ->where('key', $key)->exists();
     }
@@ -159,13 +159,11 @@ trait HasMetadata
      * related to this model (via metable)
      * for package realm
      *
-     * @param string $realm
-     *
      * @return int
      */
     public function countMeta()
     {
-        /** @var Model $this */
+        /** @var \Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface; $this */
         return Meta::metable(static::class, $this->id)
             ->count();
     }
@@ -179,7 +177,7 @@ trait HasMetadata
      */
     public function allMeta()
     {
-        /** @var Model $this */
+        /** @var \Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface; $this */
         $meta = Meta::metable(static::class, $this->id)
             ->get(['key', 'value', 'type']);
 
@@ -200,7 +198,7 @@ trait HasMetadata
      */
     public function metaKeys()
     {
-        /** @var Model $this */
+        /** @var \Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface; $this */
         return Meta::metable(static::class, $this->id)
             ->pluck('key')
             ->toArray();
@@ -217,7 +215,7 @@ trait HasMetadata
     {
         $keys = (array) $key;
 
-        /** @var Model $this */
+        /** @var \Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface; $this */
         Meta::metable(static::class, $this->id)
             ->whereIn('key', $keys)
             ->delete();
@@ -232,7 +230,7 @@ trait HasMetadata
      */
     public function purgeMeta()
     {
-        /** @var Model $this */
+        /** @var \Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface; $this */
         return Meta::metable(static::class, $this->id)
             ->delete();
     }

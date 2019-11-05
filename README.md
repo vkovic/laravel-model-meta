@@ -41,8 +41,9 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Vkovic\LaravelModelMeta\Models\Traits\HasMetadata;
+use Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMetadataInterface // <= interface is added here
 {
     use Notifiable, HasMetadata; // <= trait is added here
 
