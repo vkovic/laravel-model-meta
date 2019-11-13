@@ -23,6 +23,16 @@ trait HasMetadata
     }
 
     /**
+     * Morph many relation
+     *
+     * @return MorphMany
+     */
+    public function meta(): MorphMany
+    {
+        return $this->morphMany(Meta::class, 'metable');
+    }
+
+    /**
      * Set meta at given key
      * related to this model (via metable)
      * for package realm.
@@ -47,16 +57,6 @@ trait HasMetadata
         $meta->value = $value;
 
         $this->meta()->save($meta);
-    }
-
-    /**
-     * Morph many relation
-     *
-     * @return MorphMany
-     */
-    public function meta(): MorphMany
-    {
-        return $this->morphMany(Meta::class, 'metable');
     }
 
     /**
