@@ -3,8 +3,8 @@
 namespace Vkovic\LaravelModelMeta\Models\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface;
 use Vkovic\LaravelModelMeta\Models\Meta;
 
 trait HasMetadata
@@ -14,10 +14,10 @@ trait HasMetadata
      *
      * @return void
      */
-    public static function bootHasMetaData()
+    public static function bootHasMetaData(): void
     {
         // Delete related meta on model deletion
-        static::deleted(function (Model $model) {
+        static::deleted(function (HasMetadataInterface $model) {
             $model->purgeMeta();
         });
     }
@@ -27,7 +27,7 @@ trait HasMetadata
      *
      * @return MorphMany
      */
-    public function meta()
+    public function meta(): MorphMany
     {
         return $this->morphMany(Meta::class, 'metable');
     }
@@ -40,10 +40,12 @@ trait HasMetadata
      *
      * @param string $key
      * @param mixed  $value
+     *
+     * @return void
      */
-    public function setMeta($key, $value)
+    public function setMeta($key, $value): void
     {
-        /** @var Model $this */
+        /** @var HasMetadataInterface $this */
         $meta = Meta::metable(static::class, $this->id)
             ->where('key', $key)->first();
 
@@ -66,11 +68,12 @@ trait HasMetadata
      * @param string $key
      * @param mixed  $value
      *
+     * @return void
      * @throws \Exception
      */
-    public function createMeta($key, $value)
+    public function createMeta($key, $value): void
     {
-        /** @var Model $this */
+        /** @var HasMetadataInterface $this */
         $exists = Meta::metable(static::class, $this->id)
             ->where('key', $key)->exists();
 
@@ -97,12 +100,13 @@ trait HasMetadata
      * @param string $key
      * @param mixed  $value
      *
+     * @return void
      * @throws \Exception
      */
-    public function updateMeta($key, $value)
+    public function updateMeta($key, $value): void
     {
         try {
-            /** @var Model $this */
+            /** @var HasMetadataInterface $this */
             $meta = Meta::metable(static::class, $this->id)
                 ->where('key', $key)->firstOrFail();
         } catch (\Exception $e) {
@@ -125,11 +129,11 @@ trait HasMetadata
      * @param string $key
      * @param mixed  $default
      *
-     * @return array
+     * @return mixed
      */
     public function getMeta($key, $default = null)
     {
-        /** @var Model $this */
+        /** @var HasMetadataInterface $this */
         $meta = Meta::metable(static::class, $this->id)
             ->where('key', $key)->first();
 
@@ -147,9 +151,9 @@ trait HasMetadata
      *
      * @return bool
      */
-    public function metaExists($key)
+    public function metaExists($key): bool
     {
-        /** @var Model $this */
+        /** @var HasMetadataInterface $this */
         return Meta::metable(static::class, $this->id)
             ->where('key', $key)->exists();
     }
@@ -159,13 +163,11 @@ trait HasMetadata
      * related to this model (via metable)
      * for package realm
      *
-     * @param string $realm
-     *
      * @return int
      */
-    public function countMeta()
+    public function countMeta(): int
     {
-        /** @var Model $this */
+        /** @var HasMetadataInterface $this */
         return Meta::metable(static::class, $this->id)
             ->count();
     }
@@ -177,9 +179,9 @@ trait HasMetadata
      *
      * @return array
      */
-    public function allMeta()
+    public function allMeta(): array
     {
-        /** @var Model $this */
+        /** @var HasMetadataInterface $this */
         $meta = Meta::metable(static::class, $this->id)
             ->get(['key', 'value', 'type']);
 
@@ -198,9 +200,9 @@ trait HasMetadata
      *
      * @return array
      */
-    public function metaKeys()
+    public function metaKeys(): array
     {
-        /** @var Model $this */
+        /** @var HasMetadataInterface $this */
         return Meta::metable(static::class, $this->id)
             ->pluck('key')
             ->toArray();
@@ -212,13 +214,15 @@ trait HasMetadata
      * for package realm
      *
      * @param string|array $key
+     *
+     * @return int Number of records deleted
      */
-    public function removeMeta($key)
+    public function removeMeta($key): int
     {
         $keys = (array) $key;
 
-        /** @var Model $this */
-        Meta::metable(static::class, $this->id)
+        /** @var HasMetadataInterface $this */
+        return Meta::metable(self::class, $this->id)
             ->whereIn('key', $keys)
             ->delete();
     }
@@ -230,9 +234,9 @@ trait HasMetadata
      *
      * @return int Number of records deleted
      */
-    public function purgeMeta()
+    public function purgeMeta(): int
     {
-        /** @var Model $this */
+        /** @var HasMetadataInterface $this */
         return Meta::metable(static::class, $this->id)
             ->delete();
     }
@@ -250,10 +254,9 @@ trait HasMetadata
      * @param null|mixed $value
      *
      * @return Builder
-     *
      * @throws \Exception
      */
-    public function scopeWhereMeta(Builder $query, $key, $operator, $value = null)
+    public function scopeWhereMeta(Builder $query, $key, $operator, $value = null): Builder
     {
         // If there is no value, it means operator is value
         if ($value === null) {
@@ -293,7 +296,7 @@ trait HasMetadata
      *
      * @return Builder
      */
-    public function scopeWhereHasMetaKey(Builder $query, $key)
+    public function scopeWhereHasMetaKey(Builder $query, $key): Builder
     {
         return $query->whereHas('meta', function (Builder $q) use ($key) {
             $q->whereIn('key', (array) $key);

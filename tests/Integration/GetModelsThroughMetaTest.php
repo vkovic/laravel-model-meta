@@ -3,6 +3,7 @@
 namespace Vkovic\LaravelModelMeta\Test\Integration;
 
 use Illuminate\Support\Str;
+use Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface;
 use Vkovic\LaravelModelMeta\Test\Support\Models\User;
 use Vkovic\LaravelModelMeta\Test\TestCase;
 
@@ -131,5 +132,13 @@ class GetModelsThroughMetaTest extends TestCase
         $this->expectExceptionMessage('Invalid operator');
 
         User::whereMeta('foo', '><', 'bar');
+    }
+
+    /**
+     * @test
+     */
+    public function trait_model_has_interface_type()
+    {
+        $this->assertTrue((new User) instanceof HasMetadataInterface);
     }
 }
