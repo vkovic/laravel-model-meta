@@ -2,24 +2,8 @@
 
 namespace Vkovic\LaravelModelMeta\Models\Interfaces;
 
-use Vkovic\LaravelModelMeta\Models\Meta;
-
 interface HasMetadataInterface
 {
-    /**
-     * Initialize the trait
-     *
-     * @return void
-     */
-    public static function bootHasMetaData();
-
-    /**
-     * Morph many relation
-     *
-     * @return MorphMany
-     */
-    public function meta();
-
     /**
      * Set meta at given key
      * related to this model (via metable)
@@ -27,7 +11,7 @@ interface HasMetadataInterface
      * If meta exists, it'll be overwritten.
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function setMeta($key, $value);
 
@@ -38,7 +22,7 @@ interface HasMetadataInterface
      * If meta exists, exception will be thrown.
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @throws \Exception
      */
@@ -51,7 +35,7 @@ interface HasMetadataInterface
      * If meta doesn't exists, exception will be thrown.
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @throws \Exception
      */
@@ -63,7 +47,7 @@ interface HasMetadataInterface
      * for package realm
      *
      * @param string $key
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return array
      */
