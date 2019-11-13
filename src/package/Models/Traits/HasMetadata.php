@@ -39,13 +39,13 @@ trait HasMetadata
      * If meta exists, it'll be overwritten.
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return void
      */
     public function setMeta($key, $value): void
     {
-        /** @var HasMetadataInterface; $this */
+        /** @var HasMetadataInterface $this */
         $meta = Meta::metable(static::class, $this->id)
             ->where('key', $key)->first();
 
@@ -66,7 +66,7 @@ trait HasMetadata
      * If meta exists, exception will be thrown.
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return void
      * @throws \Exception
@@ -98,7 +98,7 @@ trait HasMetadata
      * If meta doesn't exists, exception will be thrown.
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return void
      * @throws \Exception
@@ -127,7 +127,7 @@ trait HasMetadata
      * for package realm
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
      *
      * @return mixed
      */
@@ -248,9 +248,9 @@ trait HasMetadata
     /**
      * Filter all models by providing meta data
      *
-     * @param Builder $query
-     * @param string $key
-     * @param string $operator
+     * @param Builder    $query
+     * @param string     $key
+     * @param string     $operator
      * @param null|mixed $value
      *
      * @return Builder
@@ -266,7 +266,7 @@ trait HasMetadata
 
         // Prevent invalid operators
         $validOperators = ['<', '<=', '>', '>=', '=', '<>', '!='];
-        if (! in_array($operator, $validOperators)) {
+        if (!in_array($operator, $validOperators)) {
             throw new \Exception('Invalid operator. Allowed: ' . implode(', ', $validOperators));
         }
 
@@ -292,7 +292,7 @@ trait HasMetadata
      * Filter all models which meta contains given key
      *
      * @param Builder $query
-     * @param string $key
+     * @param string  $key
      *
      * @return Builder
      */
