@@ -41,9 +41,8 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Vkovic\LaravelModelMeta\Models\Traits\HasMetadata;
-use Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface;
 
-class User extends Authenticatable implements HasMetadataInterface // <= interface is added here
+class User extends Authenticatable
 {
     use Notifiable, HasMetadata; // <= trait is added here
 
@@ -175,6 +174,31 @@ User::whereHasMetaKey(['company', 'role'])->get();
 
 // All of the examples above will return Collection of users which meet's criteria,
 // in this case our $user and $anotherUser
+```
+
+## Check if model has metadata
+
+If you need to check if model has metadata functionality, you can implement an interface that comes with the package
+like: 
+
+```php
+namespace App\Models;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface;
+
+class User extends Authenticatable implements HasMetadataInterface // <= interface is added here
+{
+    // ...
+}
+```
+
+Implementing `HasMetadataInterface` gives us possibility to check if our model has metadata functionality implemented. 
+
+```php
+if ($model instanceof HasMetadataInterface) {
+    // ... do something
+}
 ```
 
 ---
