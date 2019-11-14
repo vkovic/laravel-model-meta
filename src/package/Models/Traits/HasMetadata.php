@@ -3,8 +3,8 @@
 namespace Vkovic\LaravelModelMeta\Models\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Vkovic\LaravelModelMeta\Models\Interfaces\HasMetadataInterface;
 use Vkovic\LaravelModelMeta\Models\Meta;
 
 trait HasMetadata
@@ -17,7 +17,7 @@ trait HasMetadata
     public static function bootHasMetaData(): void
     {
         // Delete related meta on model deletion
-        static::deleted(function (HasMetadataInterface $model) {
+        static::deleted(function (Model $model) {
             $model->purgeMeta();
         });
     }
